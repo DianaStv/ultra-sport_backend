@@ -1,10 +1,10 @@
 # Introduction 
 
-This project contiinsthe admin part of the sport shop.
+This project include the backend part of the sport shop (Ultra Sport).
+Backend part is located here: https://github.com/DianaStv/ultra-sport_frontend.
 
 ## Versions
 
-- Angular => 13.3.0
 - Node => 16.x.x
 - npm => 6.14.15
 
@@ -13,17 +13,18 @@ This project contiinsthe admin part of the sport shop.
 
 ## requirement
 - node and npm installed
-- check that the `ng` command is bootable from the command line
 
 ## Foreplay
 
 Open the command line terminal on the project root folder and fire the commands:
 
-1. Run `npm install` for install the project dependencies
+1. Run `npm install` to install the project dependencies
+2. In the root folder run `git clone https://github.com/DianaStv/ultra-sport_frontend.git client` to clone frontend part
+3. Run `npm run client-install` to install the project dependencies for frontend part
 
 ## Development 
 
-Run `ng run dev` to run backend and frontend part then it start the navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Run `npm run dev` to run backend and frontend part then it start the navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 ## Build
 
