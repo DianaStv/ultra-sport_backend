@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Category = require('../models/Category');
 const errorHandler = require('../utils/error-handler');
 
@@ -43,75 +44,89 @@ module.exports.getAll = async function(req, res) {
   }
 }
 
-// module.exports.getAll = async function(req, res) {
-//   try {
-//     const query = {
-//       // user: req.user.id,
-//     };
+module.exports.getAllFiltered = async function(req, res) {
+  try {
+    const query = {};
 
-//     if (req.query.sex) {
-//       query.sex = req.query.sex;
-//     }
-//     if (req.query.category) {
-//       query.category = req.query.category;
-//     }
-//     if (req.query.product) {
-//       query.product = req.query.product;
-//     }
-//     if (req.query.name) {
-//       query.name = {"$regex": req.query.name, "$options": "i"}
-//     }
-//     if (req.query.code) {
-//       query.code = {"$regex": "^" + req.query.code}
-//     }
+    if (req.query.code) {
+      query.code = {"$regex": "^" + req.query.code}
+    }
 
-//     const categories = await Category
-//     .aggregate([
-//       { $match: { 
-//         user: req.user.id.toString,
-//         ...query
-//        } },
-//       { $unwind: '$sizes'},
-//       { $match: {'sizes.amount': {$gt: 0}}},
-//       { $group: {
-//           _id: '$_id', 
-//           sex: {$first: '$sex'},
-//           category: {$first: '$category'},
-//           product: {$first: '$product'},
-//           code: {$first: '$code'},
-//           name: {$first: '$name'},
-//           price: {$first: '$price'},
-//           imageSrc: {$first: '$imageSrc'},
-//           user: {$first: '$user'},
-//           sizes: {$push: '$sizes'}
-//       }},
-//       { $facet: {
-//         paginatedResults: [{ $skip: +req.query.offset * +req.query.limit }, { $limit: +req.query.limit }],
-//         totalCount: [
-//           {
-//             $count: 'count'
-//           }
-//         ]
-//       }}
-//     ])
+    const categories = await Category
+    .aggregate([
+      { $match: { 
+        user: req.user.id.toString,
+        ...query
+       } },
+      { $unwind: '$sizes'},
+      { $match: {'sizes.amount': {$gt: 0}}},
+      { $group: {
+          _id: '$_id', 
+          sex: {$first: '$sex'},
+          category: {$first: '$category'},
+          product: {$first: '$product'},
+          code: {$first: '$code'},
+          name: {$first: '$name'},
+          price: {$first: '$price'},
+          imageSrc: {$first: '$imageSrc'},
+          user: {$first: '$user'},
+          sizes: {$push: '$sizes'}
+      }},
+      { $sort : { _id : 1 } },
+      { $facet: {
+        paginatedResults: [{ $skip: +req.query.offset * +req.query.limit }, { $limit: +req.query.limit }],
+        totalCount: [
+          {
+            $count: 'count'
+          }
+        ]
+      }}
+    ]);
 
-//     const data = {
-//       categories: [...categories[0].paginatedResults],
-//       length: categories[0].totalCount[0].count,
-//       offset: +req.query.offset,
-//       limit: +req.query.limit
-//     };
+    const data = {
+      categories: [...categories[0].paginatedResults],
+      length: categories[0].totalCount[0].count,
+      offset: +req.query.offset,
+      limit: +req.query.limit
+    };
 
-//     res.status(200).json(data);
-//   } catch (e) {
-//     errorHandler(res, e);
-//   }
-// }
+    res.status(200).json(data);
+  } catch (e) {
+    errorHandler(res, e);
+  }
+}
 
 module.exports.getById = async function(req, res) {
   try {
     const category = await Category.findById(req.params.id);
     res.status(200).json(category);
+  } catch (e) {
+    errorHandler(res, e);
+  }
+}
+
+module.exports.getFilteredById = async function(req, res) {
+  try {
+    const categories = await Category
+    .aggregate([
+      { $match: { _id: mongoose.Types.ObjectId(req.params.id) }},
+      { $unwind: '$sizes'},
+      { $match: {'sizes.amount': {$gt: 0}}},
+      { $group: {
+          _id: '$_id', 
+          sex: {$first: '$sex'},
+          category: {$first: '$category'},
+          product: {$first: '$product'},
+          code: {$first: '$code'},
+          name: {$first: '$name'},
+          price: {$first: '$price'},
+          imageSrc: {$first: '$imageSrc'},
+          user: {$first: '$user'},
+          sizes: {$push: '$sizes'}
+      }}
+    ]);
+
+    res.status(200).json(categories[0]);
   } catch (e) {
     errorHandler(res, e);
   }

@@ -5,7 +5,9 @@ const upload = require('../middleware/upload');
 const router = express.Router();
 
 router.get('/', passport.authenticate('jwt', { session: false }), controller.getAll);
+router.get('/filtered', passport.authenticate('jwt', { session: false }), controller.getAllFiltered);
 router.get('/:id', passport.authenticate('jwt', { session: false }), controller.getById);
+router.get('/filtered/:id', passport.authenticate('jwt', { session: false }), controller.getFilteredById);
 router.delete('/:id', passport.authenticate('jwt', { session: false }), controller.remove);
 router.post('/', passport.authenticate('jwt', { session: false }), upload.single('image'), controller.create);
 router.patch('/:id', passport.authenticate('jwt', { session: false }), upload.single('image'), controller.update);
