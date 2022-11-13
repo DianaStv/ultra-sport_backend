@@ -44,6 +44,10 @@ const categorySchema = new Schema({
   user: {
     ref: 'users',
     type: mongoose.Types.ObjectId
+  },
+  deleted: {
+    type: Boolean,
+    default: false
   }
 });
 

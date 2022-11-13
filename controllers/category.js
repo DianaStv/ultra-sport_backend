@@ -5,7 +5,8 @@ const errorHandler = require('../utils/error-handler');
 module.exports.getAll = async function(req, res) {
   try {
     const query = {
-      user: req.user.id
+      user: req.user.id,
+      deleted: false || null
     };
 
     if (req.query.sex) {
@@ -56,6 +57,7 @@ module.exports.getAllFiltered = async function(req, res) {
     .aggregate([
       { $match: { 
         user: req.user.id.toString,
+        deleted: false || null,
         ...query
        } },
       { $unwind: '$sizes'},
@@ -85,7 +87,7 @@ module.exports.getAllFiltered = async function(req, res) {
 
     const data = {
       categories: [...categories[0].paginatedResults],
-      length: categories[0].totalCount[0].count,
+      length: categories[0]?.totalCount[0]?.count || 0,
       offset: +req.query.offset,
       limit: +req.query.limit
     };
@@ -184,7 +186,15 @@ module.exports.update = async function(req, res) {
 
 module.exports.remove = async function(req, res) {
   try {
-    await Category.remove({ _id: req.params.id });
+    // await Category.remove({ _id: req.params.id });
+
+    const updated = { deleted: true };
+    await Category.findOneAndUpdate(
+      { _id: req.params.id },
+      { $set: updated },
+      { new: true }
+    );
+    
     res.status(200).json({
       message: 'Товар видалено'
     });
