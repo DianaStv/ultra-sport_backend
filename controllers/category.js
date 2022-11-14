@@ -6,7 +6,7 @@ module.exports.getAll = async function(req, res) {
   try {
     const query = {
       user: req.user.id,
-      deleted: false || null
+      deleted: false
     };
 
     if (req.query.sex) {
@@ -57,7 +57,7 @@ module.exports.getAllFiltered = async function(req, res) {
     .aggregate([
       { $match: { 
         user: req.user.id.toString,
-        deleted: false || null,
+        deleted: false,
         ...query
        } },
       { $unwind: '$sizes'},
